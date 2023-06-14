@@ -1,16 +1,20 @@
-/*
-This is auto generated boilerplate, we can remove it or modify it
--Drew
-*/
-"use strict";
-var http = require("http");
-var port = process.env.PORT || 1337;
+const express = require("express");
+const bodyParser = require("body-parser");
+const cors = require("cors");
+const knex = require("knex");
 
-http
-  .createServer(function (req, res) {
-    res.writeHead(200, { "Content-Type": "text/plain" });
-    res.end("Hello World\n");
-  })
-  .listen(port);
+const app = express();
+app.use(cors());
+app.use(bodyParser.json());
 
-// comment by Ed
+app.get("/", (req, res) => {
+  let x = {
+    name: "ed",
+    age: 22,
+  };
+  res.json(x);
+});
+
+app.listen(3000, () => {
+  console.log("servier is live now");
+});
