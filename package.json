@@ -1,0 +1,14 @@
+{
+  "name": "csun-task-list",
+  "version": "0.0.0",
+  "description": "CSUN Task List",
+  "main": "server.js",
+  "author": {
+    "name": ""
+  },
+  "devDependencies": {
+    "eslint": "^8.21.0"
+  },
+  "eslintConfig": {
+  }
+}
