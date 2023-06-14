@@ -1,3 +1,7 @@
+/*
+This is auto generated boilerplate, we can remove it or modify it
+-Drew
+*/
 'use strict';
 var http = require('http');
 var port = process.env.PORT || 1337;

@@ -6,9 +6,8 @@
   "author": {
     "name": ""
   },
-  "devDependencies": {
-    "eslint": "^8.21.0"
-  },
-  "eslintConfig": {
+  "eslintConfig": {},
+  "dependencies": {
+    "eslint": "^8.42.0"
   }
 }
