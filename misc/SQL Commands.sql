@@ -1,0 +1,39 @@
+CREATE TABLE users (
+   	id SERIAL,
+	fname VARCHAR(50) NOT NULL,
+	lname VARCHAR(100) NOT NULL,
+	email VARCHAR(100) NOT NULL,
+	email_active BOOLEAN NOT NULL,
+	password VARCHAR(400) NOT NULL,
+	access_token VARCHAR(50) NOT NULL,
+	timestamp TIMESTAMPTZ default CURRENT_TIMESTAMP
+);
+
+
+CREATE TABLE tasks (
+   	id SERIAL,
+	user_id INTEGER NOT NULL,
+	title VARCHAR(500) NOT NULL,
+	description TEXT,
+	date DATE,
+	category VARCHAR(100) NOT NULL,
+	completed BOOLEAN NOT NULL,
+	timestamp TIMESTAMPTZ default CURRENT_TIMESTAMP
+);
+
+
+CREATE TABLE categories (
+   	id SERIAL,
+	user_id INTEGER NOT NULL,
+	category VARCHAR(100) NOT NULL,
+	timestamp TIMESTAMPTZ default CURRENT_TIMESTAMP
+);
+
+INSERT INTO users (
+	fname,
+	lname,
+	email,
+	email_active,
+	password,
+	access_token
+) VALUES ('Eduard', 'Hovhannisyan', 'edhov@gmail.com', TRUE, 'asdasdasd', 'accessToken');
