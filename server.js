@@ -5,11 +5,10 @@ const knex = require("knex");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
 const nodemailer = require("nodemailer");
-//
-const _EMAIL = process.env.EMAIL;
-const _PASSWORD = process.env.PASSWORD;
 const saltRounds = 5;
 const randomstring = require("randomstring");
+const _EMAIL = process.env.EMAIL;
+const _PASSWORD = process.env.PASSWORD;
 
 const app = express();
 app.use(cors());
@@ -34,13 +33,12 @@ const transporter = nodemailer.createTransport({
 });
 
 const mailOptions = (sendTo, subject, text) => {
-  var obj = {
+  return {
     from: _EMAIL,
     to: sendTo,
     subject: subject,
     text: text,
   };
-  return obj;
 };
 
 const sendEmail = (itemToMail) => {
@@ -124,7 +122,33 @@ app.get("/user-verify-email", (req, res) => {
 });
 
 app.post("/user-login", (req, res) => {
-  // not done yet
+  const { email, password } = req.body;
+
+  database("users")
+    .select("*")
+    .where({ email })
+    .then((data) => {
+      if (data.length < 1) {
+        res.json("User does not exist");
+      } else if (!bcrypt.compare(password, data[0].password)) {
+        res.json("Wrong password");
+      } else if (!data[0].email_active) {
+        res.json("The email has not been verified yet");
+      } else {
+        const randomString = randomstring.generate();
+        database("users")
+          .returning("*")
+          .update({
+            access_token: randomString,
+          })
+          .then((data) => {
+            res.json({
+              user_id: data[0].id,
+              access_token: data[0].access_token,
+            });
+          });
+      }
+    });
 });
 
 app.listen(4000, () => {
