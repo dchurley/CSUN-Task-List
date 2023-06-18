@@ -51,6 +51,24 @@ const sendEmail = (itemToMail) => {
   });
 };
 
+const authUser = async (req, res, next) => {
+  const { user_id, access_token } = req.body;
+
+  await database("users")
+    .select("*")
+    .where({
+      id: user_id,
+      access_token: access_token,
+    })
+    .then((data) => {
+      if (data.length != 0) {
+        next();
+      } else {
+        res.json("Unauthorized User");
+      }
+    });
+};
+
 app.post("/user-register", async (req, res) => {
   const { fname, lname, email, password } = req.body;
 
@@ -148,6 +166,45 @@ app.post("/user-login", (req, res) => {
             });
           });
       }
+    });
+});
+
+app.post("/add-user-category", authUser, (req, res) => {
+  const { user_id, category } = req.body;
+
+  database("categories")
+    .returning("*")
+    .insert({
+      user_id,
+      category,
+    })
+    .then((data) => {
+      res.json({
+        addedCategory: data[0],
+      });
+    });
+});
+
+app.post("/add-user-task", authUser, (req, res) => {
+  const { user_id, title, description, date, category } = req.body;
+
+  let dateSet = date;
+  if (!date) dateSet = null;
+
+  database("tasks")
+    .returning("*")
+    .insert({
+      user_id,
+      title,
+      description,
+      date: dateSet,
+      category,
+      completed: false,
+    })
+    .then((data) => {
+      res.json({
+        addedTask: data[0],
+      });
     });
 });
 
