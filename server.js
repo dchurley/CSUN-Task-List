@@ -208,6 +208,49 @@ app.post("/add-user-task", authUser, (req, res) => {
     });
 });
 
+app.put("/edit-user-category", authUser, (req, res) => {
+  const { user_id, category } = req.body;
+
+  database("categories")
+    .returning("*")
+    .update({
+      category,
+    })
+    .where({
+      user_id,
+    })
+    .then((data) => {
+      res.json({
+        addedCategory: data[0],
+      });
+    });
+});
+
+app.put("/edit-user-task", authUser, (req, res) => {
+  const { user_id, title, description, date, category, completed } = req.body;
+
+  let dateSet = date;
+  if (!date) dateSet = null;
+
+  database("tasks")
+    .returning("*")
+    .update({
+      title,
+      description,
+      date: dateSet,
+      category,
+      completed,
+    })
+    .where({
+      user_id,
+    })
+    .then((data) => {
+      res.json({
+        addedTask: data[0],
+      });
+    });
+});
+
 app.listen(4000, () => {
   console.log("servier is live now");
 });
