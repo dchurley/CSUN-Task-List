@@ -7,8 +7,12 @@ require("dotenv").config();
 const nodemailer = require("nodemailer");
 const saltRounds = 5;
 const randomstring = require("randomstring");
-const _EMAIL = process.env.EMAIL;
-const _PASSWORD = process.env.PASSWORD;
+const _DUMMY_GMAIL = process.env.EMAIL;
+const _DUMMY_PASSWORD = process.env.PASSWORD;
+const _SERVER_LINK = "http://localhost:4000";
+const _DB_USERS_TABLE = "users";
+const _DB_CATEGORIES_TABLE = "categories";
+const _DB_TASKS_TABLE = "tasks";
 
 const app = express();
 app.use(cors());
@@ -27,14 +31,14 @@ const database = knex({
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: _EMAIL,
-    pass: _PASSWORD,
+    user: _DUMMY_GMAIL,
+    pass: _DUMMY_PASSWORD,
   },
 });
 
 const mailOptions = (sendTo, subject, text) => {
   return {
-    from: _EMAIL,
+    from: _DUMMY_GMAIL,
     to: sendTo,
     subject: subject,
     text: text,
@@ -54,7 +58,7 @@ const sendEmail = (itemToMail) => {
 const authUser = async (req, res, next) => {
   const { user_id, access_token } = req.body;
 
-  await database("users")
+  await database(_DB_USERS_TABLE)
     .select("*")
     .where({
       id: user_id,
@@ -72,7 +76,7 @@ const authUser = async (req, res, next) => {
 app.post("/user-register", async (req, res) => {
   const { fname, lname, email, password } = req.body;
 
-  const foundUserData = await database("users")
+  const foundUserData = await database(_DB_USERS_TABLE)
     .select("*")
     .where({ email: email });
   if (foundUserData.length > 0) {
@@ -81,7 +85,7 @@ app.post("/user-register", async (req, res) => {
     const hashedPassword = await bcrypt.hashSync(password, saltRounds);
     const initialRandomString = randomstring.generate();
 
-    database("users")
+    database(_DB_USERS_TABLE)
       .returning("*")
       .insert({
         fname,
@@ -95,7 +99,7 @@ app.post("/user-register", async (req, res) => {
         if (data.length == 0) {
           res.json("error occured, unable to add the user");
         } else {
-          let constructedLink = `http://localhost:4000/user-verify-email?user_id=${data[0].id}&fname=${data[0].fname}&lname=${data[0].lname}&access_token=${data[0].access_token}`;
+          let constructedLink = `${_SERVER_LINK}/user-verify-email?user_id=${data[0].id}&fname=${data[0].fname}&lname=${data[0].lname}&access_token=${data[0].access_token}`;
           let objectThatHasMailOptions = mailOptions(
             email,
             "Email Verification",
@@ -111,7 +115,7 @@ app.post("/user-register", async (req, res) => {
 app.get("/user-verify-email", (req, res) => {
   const { user_id, fname, lname, access_token } = req.query;
 
-  database("users")
+  database(_DB_USERS_TABLE)
     .select("*")
     .where({
       id: user_id,
@@ -125,7 +129,7 @@ app.get("/user-verify-email", (req, res) => {
       } else if (data[0].email_active) {
         res.json("Email is already active");
       } else {
-        database("users")
+        database(_DB_USERS_TABLE)
           .returning("*")
           .update({ email_active: true })
           .where({
@@ -142,7 +146,7 @@ app.get("/user-verify-email", (req, res) => {
 app.post("/user-login", (req, res) => {
   const { email, password } = req.body;
 
-  database("users")
+  database(_DB_USERS_TABLE)
     .select("*")
     .where({ email })
     .then((data) => {
@@ -154,7 +158,7 @@ app.post("/user-login", (req, res) => {
         res.json("The email has not been verified yet");
       } else {
         const randomString = randomstring.generate();
-        database("users")
+        database(_DB_USERS_TABLE)
           .returning("*")
           .update({
             access_token: randomString,
@@ -172,7 +176,7 @@ app.post("/user-login", (req, res) => {
 app.post("/add-user-category", authUser, (req, res) => {
   const { user_id, category } = req.body;
 
-  database("categories")
+  database(_DB_CATEGORIES_TABLE)
     .returning("*")
     .insert({
       user_id,
@@ -191,7 +195,7 @@ app.post("/add-user-task", authUser, (req, res) => {
   let dateSet = date;
   if (!date) dateSet = null;
 
-  database("tasks")
+  database(_DB_TASKS_TABLE)
     .returning("*")
     .insert({
       user_id,
@@ -211,7 +215,7 @@ app.post("/add-user-task", authUser, (req, res) => {
 app.put("/edit-user-category", authUser, (req, res) => {
   const { user_id, category } = req.body;
 
-  database("categories")
+  database(_DB_CATEGORIES_TABLE)
     .returning("*")
     .update({
       category,
@@ -232,7 +236,7 @@ app.put("/edit-user-task", authUser, (req, res) => {
   let dateSet = date;
   if (!date) dateSet = null;
 
-  database("tasks")
+  database(_DB_TASKS_TABLE)
     .returning("*")
     .update({
       title,
