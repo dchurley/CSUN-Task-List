@@ -256,5 +256,5 @@ app.put("/edit-user-task", authUser, (req, res) => {
 });
 
 app.listen(4000, () => {
-  console.log("servier is live now");
+  console.log("Server is live now");
 });

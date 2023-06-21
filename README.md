@@ -3,11 +3,17 @@
 CSUN Task List is software created for COMP 380 Software Engineering Lab at CSUN.
 
 Group members:
+
 Drew Hurley
+
 Aya Samaha
+
 Eduard Hovhannisyan
+
 Efren Apolinar
+
 Michael DeSantiago
+
 Sabrina Motto
 
 Our group is the best in the class!
