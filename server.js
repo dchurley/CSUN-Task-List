@@ -149,10 +149,11 @@ app.post("/user-login", (req, res) => {
   database(_DB_USERS_TABLE)
     .select("*")
     .where({ email })
-    .then((data) => {
+    .then(async (data) => {
+      // let answer = await bcrypt.compare(password, data[0].password)
       if (data.length < 1) {
         res.json("User does not exist");
-      } else if (!bcrypt.compare(password, data[0].password)) {
+      } else if ((await bcrypt.compare(password, data[0].password)) != true) {
         res.json("Wrong password");
       } else if (!data[0].email_active) {
         res.json("The email has not been verified yet");
