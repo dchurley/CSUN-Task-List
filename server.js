@@ -79,6 +79,26 @@ const authUser = async (req, res, next) => {
     });
 };
 
+// delete this later
+app.get("/get-all", async (req, res) => {
+  let users = await database(_DB_USERS_TABLE).select("*");
+  let categories = await database(_DB_CATEGORIES_TABLE).select("*");
+  let tasks = await database(_DB_TASKS_TABLE).select("*");
+  res.json({
+    users,
+    categories,
+    tasks,
+  });
+});
+
+// delete this later
+app.get("/truncate-all", async (req, res) => {
+  await database(_DB_USERS_TABLE).truncate();
+  await database(_DB_CATEGORIES_TABLE).truncate();
+  await database(_DB_TASKS_TABLE).truncate();
+  res.json("All truncated");
+});
+
 app.post("/user-register", async (req, res) => {
   const { fname, lname, email, password } = req.body;
 
@@ -166,6 +186,9 @@ app.post("/user-login", (req, res) => {
           .update({
             access_token: randomString,
           })
+          .where({
+            email,
+          })
           .then((data) => {
             res.json({
               user_id: data[0].id,
@@ -185,6 +208,7 @@ app.post("/get-user-categories", authUser, (req, res) => {
       user_id,
     })
     .then((data) => {
+      console.log(data);
       res.json({
         categories: data,
       });
@@ -193,6 +217,8 @@ app.post("/get-user-categories", authUser, (req, res) => {
 
 app.post("/add-user-category", authUser, (req, res) => {
   const { user_id, category } = req.body;
+
+  console.log(user_id);
 
   database(_DB_CATEGORIES_TABLE)
     .returning("*")
