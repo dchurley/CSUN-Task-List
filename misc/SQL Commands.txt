@@ -29,21 +29,6 @@ CREATE TABLE categories (
 	timestamp TIMESTAMPTZ default CURRENT_TIMESTAMP
 );
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 INSERT INTO users (
 	fname,
 	lname,

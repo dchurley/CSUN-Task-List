@@ -20,11 +20,16 @@ app.use(bodyParser.json());
 
 const database = knex({
   client: "pg",
-  connection: {
-    host: "127.0.0.1",
+    connection: {
+    //Testing data no longer relevant
+    //host: "127.0.0.1",
+    //user: "postgres",
+    //password: "ed0497",
+    //database: "csun_task_force",
+    host: "comp380.clbokytymkwx.us-east-2.rds.amazonaws.com",
     user: "postgres",
-    password: "ed0497",
-    database: "csun_task_force",
+    password: "secret380",
+    database: "postgres",
   },
 });
 
