@@ -30,6 +30,7 @@ const database = knex({
     user: "postgres",
     password: "secret380",
     database: "postgres",
+    port: 5432;
   },
 });
 
