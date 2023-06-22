@@ -99,7 +99,7 @@ app.post("/user-register", async (req, res) => {
         if (data.length == 0) {
           res.json("error occured, unable to add the user");
         } else {
-          let constructedLink = `${_SERVER_LINK}/user-verify-email?user_id=${data[0].id}&fname=${data[0].fname}&lname=${data[0].lname}&access_token=${data[0].access_token}`;
+          let constructedLink = `${_SERVER_LINK}/user-verify-email?user_id=${data[0].id}&access_token=${data[0].access_token}`;
           let objectThatHasMailOptions = mailOptions(
             email,
             "Email Verification",
@@ -113,14 +113,12 @@ app.post("/user-register", async (req, res) => {
 });
 
 app.get("/user-verify-email", (req, res) => {
-  const { user_id, fname, lname, access_token } = req.query;
+  const { user_id, access_token } = req.query;
 
   database(_DB_USERS_TABLE)
     .select("*")
     .where({
       id: user_id,
-      fname,
-      lname,
       access_token,
     })
     .then(async (data) => {
@@ -134,8 +132,6 @@ app.get("/user-verify-email", (req, res) => {
           .update({ email_active: true })
           .where({
             id: user_id,
-            fname,
-            lname,
             access_token,
           })
           .then(() => res.json("Email has been activated"));
@@ -174,6 +170,21 @@ app.post("/user-login", (req, res) => {
     });
 });
 
+app.post("/get-user-categories", authUser, (req, res) => {
+  const { user_id } = req.body;
+
+  database(_DB_CATEGORIES_TABLE)
+    .select("*")
+    .where({
+      user_id,
+    })
+    .then((data) => {
+      res.json({
+        categories: data,
+      });
+    });
+});
+
 app.post("/add-user-category", authUser, (req, res) => {
   const { user_id, category } = req.body;
 
@@ -186,6 +197,39 @@ app.post("/add-user-category", authUser, (req, res) => {
     .then((data) => {
       res.json({
         addedCategory: data[0],
+      });
+    });
+});
+
+app.put("/edit-user-category", authUser, (req, res) => {
+  const { user_id, category } = req.body;
+
+  database(_DB_CATEGORIES_TABLE)
+    .returning("*")
+    .update({
+      category,
+    })
+    .where({
+      user_id,
+    })
+    .then((data) => {
+      res.json({
+        addedCategory: data[0],
+      });
+    });
+});
+
+app.post("/get-user-tasks", authUser, (req, res) => {
+  const { user_id } = req.body;
+
+  database(_DB_TASKS_TABLE)
+    .select("*")
+    .where({
+      user_id,
+    })
+    .then((data) => {
+      res.json({
+        tasks: data,
       });
     });
 });
@@ -209,24 +253,6 @@ app.post("/add-user-task", authUser, (req, res) => {
     .then((data) => {
       res.json({
         addedTask: data[0],
-      });
-    });
-});
-
-app.put("/edit-user-category", authUser, (req, res) => {
-  const { user_id, category } = req.body;
-
-  database(_DB_CATEGORIES_TABLE)
-    .returning("*")
-    .update({
-      category,
-    })
-    .where({
-      user_id,
-    })
-    .then((data) => {
-      res.json({
-        addedCategory: data[0],
       });
     });
 });
