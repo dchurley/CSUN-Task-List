@@ -79,12 +79,6 @@ const authUser = async (req, res, next) => {
     });
 };
 
-app.get("/", async (req, res) => {
-  let data = await database(_DB_USERS_TABLE).select("*");
-
-  console.log(data);
-});
-
 app.post("/user-register", async (req, res) => {
   const { fname, lname, email, password } = req.body;
 
@@ -269,28 +263,23 @@ app.post("/add-user-task", authUser, (req, res) => {
     });
 });
 
-app.put("/edit-user-task", authUser, (req, res) => {
-  const { user_id, title, description, date, category, completed } = req.body;
-
-  let dateSet = date;
-  if (!date) dateSet = null;
+app.put("/complete-user-task", authUser, (req, res) => {
+  const { id } = req.body;
 
   database(_DB_TASKS_TABLE)
     .returning("*")
     .update({
-      title,
-      description,
-      date: dateSet,
-      category,
-      completed,
+      completed: true,
     })
     .where({
-      user_id,
+      id,
     })
     .then((data) => {
-      res.json({
-        addedTask: data[0],
-      });
+      if (data.length === 0) {
+        res.json("Unable to complete");
+      } else {
+        res.json("Updated Successfully");
+      }
     });
 });
 
