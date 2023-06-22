@@ -20,13 +20,14 @@ app.use(bodyParser.json());
 
 const database = knex({
   client: "pg",
-    connection: {
+  connection: {
     //Testing data no longer relevant
     //host: "127.0.0.1",
     //user: "postgres",
     //password: "ed0497",
     //database: "csun_task_force",
     host: "comp380.clbokytymkwx.us-east-2.rds.amazonaws.com",
+    port: 5432,
     user: "postgres",
     password: "secret380",
     database: "postgres",
@@ -77,6 +78,12 @@ const authUser = async (req, res, next) => {
       }
     });
 };
+
+app.get("/", async (req, res) => {
+  let data = await database(_DB_USERS_TABLE).select("*");
+
+  console.log(data);
+});
 
 app.post("/user-register", async (req, res) => {
   const { fname, lname, email, password } = req.body;
