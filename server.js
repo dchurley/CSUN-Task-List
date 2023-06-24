@@ -208,7 +208,6 @@ app.post("/get-user-categories", authUser, (req, res) => {
       user_id,
     })
     .then((data) => {
-      console.log(data);
       res.json({
         categories: data,
       });
@@ -217,8 +216,6 @@ app.post("/get-user-categories", authUser, (req, res) => {
 
 app.post("/add-user-category", authUser, (req, res) => {
   const { user_id, category } = req.body;
-
-  console.log(user_id);
 
   database(_DB_CATEGORIES_TABLE)
     .returning("*")
@@ -297,6 +294,44 @@ app.put("/complete-user-task", authUser, (req, res) => {
     .update({
       completed: true,
     })
+    .where({
+      id,
+    })
+    .then((data) => {
+      if (data.length === 0) {
+        res.json("Unable to complete");
+      } else {
+        res.json("Updated Successfully");
+      }
+    });
+});
+
+app.put("/uncomplete-user-task", authUser, (req, res) => {
+  const { id } = req.body;
+
+  database(_DB_TASKS_TABLE)
+    .returning("*")
+    .update({
+      completed: false,
+    })
+    .where({
+      id,
+    })
+    .then((data) => {
+      if (data.length === 0) {
+        res.json("Unable to complete");
+      } else {
+        res.json("Updated Successfully");
+      }
+    });
+});
+
+app.delete("/delete-user-task", authUser, (req, res) => {
+  const { id } = req.body;
+
+  database(_DB_TASKS_TABLE)
+    .returning("*")
+    .del()
     .where({
       id,
     })
