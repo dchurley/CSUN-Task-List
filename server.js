@@ -193,6 +193,9 @@ app.post("/user-login", (req, res) => {
             res.json({
               user_id: data[0].id,
               access_token: data[0].access_token,
+              first_name: data[0].fname,
+              last_name: data[0].lname,
+              date_registered: data[0].timestamp,
             });
           });
       }
