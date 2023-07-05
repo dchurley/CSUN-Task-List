@@ -221,33 +221,41 @@ app.post("/add-user-category", authUser, (req, res) => {
   const { user_id, category } = req.body;
 
   database(_DB_CATEGORIES_TABLE)
-    .returning("*")
-    .insert({
+    .select("*")
+    .where({
       user_id,
       category,
     })
     .then((data) => {
-      res.json({
-        addedCategory: data[0],
-      });
+      if (data.length != 0) {
+        res.json({ msg: "Category already exists" });
+      } else {
+        database(_DB_CATEGORIES_TABLE)
+          .returning("*")
+          .insert({
+            user_id,
+            category,
+          })
+          .then((data) => {
+            res.json({
+              addedCategory: data[0],
+            });
+          });
+      }
     });
 });
 
-app.put("/edit-user-category", authUser, (req, res) => {
-  const { user_id, category } = req.body;
+app.delete("/delete-user-category", authUser, (req, res) => {
+  const { id } = req.body;
 
   database(_DB_CATEGORIES_TABLE)
     .returning("*")
-    .update({
-      category,
-    })
+    .del()
     .where({
-      user_id,
+      id,
     })
     .then((data) => {
-      res.json({
-        addedCategory: data[0],
-      });
+      res.json("Deleted");
     });
 });
 
