@@ -9,7 +9,7 @@ const saltRounds = 5;
 const randomstring = require("randomstring");
 const _DUMMY_GMAIL = process.env.EMAIL;
 const _DUMMY_PASSWORD = process.env.PASSWORD;
-const _SERVER_LINK = "http://localhost:4000";
+const _SERVER_LINK = process.env.SERVER_LINK;
 const _DB_USERS_TABLE = "users";
 const _DB_CATEGORIES_TABLE = "categories";
 const _DB_TASKS_TABLE = "tasks";
@@ -355,6 +355,6 @@ app.delete("/delete-user-task", authUser, (req, res) => {
     });
 });
 
-app.listen(4000, () => {
+app.listen(3000, () => {
   console.log("Server is live now");
 });
